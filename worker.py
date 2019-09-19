@@ -232,55 +232,7 @@ def process_prod(raw_prod, params):
                 ]
             }
         }
-
-
-        
-        # {
-        #     'age_restriction': False,
-        #     'balance_price': 374,
-        #     'cm_height': 15,
-        #     'cm_width': 7.07,
-        #     'description': 'Royal Canin Pug Adulto',
-        #     'discount': 0,
-        #     'discount_earnings': '',
-        #     'discount_pay_products': '',
-        #     'discount_tag_color': '',
-        #     'discount_type': '',
-        #     'ean': '30111454409',
-        #     'has_antismoking': False,
-        #     'has_pum': True,
-        #     'has_toppings': False,
-        #     'have_discount': False,
-        #     'height': 520,
-        #     'id': '72000175_975352638',
-        #     'identification_required': False,
-        #     'image': '975352638-1537993139.png',
-        #     'in_stock': True,
-        #     'is_available': True,
-        #     'is_discontinued': False,
-        #     'label': None,
-        #     'max_quantity_in_grams': 0,
-        #     'min_quantity_in_grams': 0,
-        #     'name': 'Royal Canin Pug Adulto',
-        #     'need_image': False,
-        #     'price': 374,
-        #     'product_groups_tags': [],
-        #     'product_id': '975352638',
-        #     'pum': '300.88',
-            
-        #     'real_balance_price': 340,
-        #     'real_price': 340,
-        #     'requires_medical_prescription': False,
-        #     'sale_type': 'U',
-        #     'step_quantity_in_grams': 0,
-        #     'store_id': 72000175,
-        #     'store_type': 'petco',
-        #     'trademark': 'Royal Canin',
-        #     'unit_type': 'Kg',
-        #     'quantity': 1.13,
-        #     'width': 245
-        # }
-        logger.debug(prod_cl)
+        # logger.debug(prod_cl)
     except Exception as e:
         err_st = "Unexpected error in process_prod: {}".format(e)
         ws_id = stream_monitor('worker', step=params.get('route_key'), value=1, ms_id=params['ms_id'], store_id=params['store_id'])
