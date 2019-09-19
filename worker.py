@@ -34,6 +34,11 @@ app.conf.CELERY_ACCEPT_CONTENT = ['json']
 app.conf.CELERY_RESULT_SERIALIZER = 'json'
 app.conf.CELERY_TASK_SERIALIZER = 'json'
 
+app.conf.update({
+    'worker_hijack_root_logger': False, # so celery does not set up its loggers
+    'worker_redirect_stdouts': False, # so celery does not redirect its logs
+})
+
 
 @app.task
 def start_stores(master_id, st_id):

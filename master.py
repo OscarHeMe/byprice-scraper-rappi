@@ -80,32 +80,25 @@ def request_valid_stores(rt_key):
 
 # Main method
 if __name__ == '__main__':
-    ms_id = stream_monitor('master', params={})
-    try:
-        logger.info("Started master scraper: " + CELERY_QUEUE + " / scraper_type: "+str(SCRAPER_TYPE))
-        if SCRAPER_TYPE and len(SCRAPER_TYPE) > 0:
-            if SCRAPER_TYPE == 'price' or SCRAPER_TYPE == 'item':
-                # Fetch Valid Stores
-                sts_to_crawl = request_valid_stores(str(SCRAPER_TYPE))
-                logger.debug(sts_to_crawl[0])
-                # Number of stores to crawl
-                num_stores = range(0, len(sts_to_crawl))
-                ms_id = stream_monitor('master', params=sts_to_crawl[0], num_stores=len(sts_to_crawl))
-                logger.info("Crawling {} stores!".format(STORES if len(sts_to_crawl) > int(STORES) else len(sts_to_crawl)))
-                # Call to crawl all stores async
-                for s in num_stores:
-                    logger.debug("Calling to scrape")
-                    call_scraper(sts_to_crawl[s], ms_id)
-                    # call_parallel(sts_to_crawl[s], ms_id)
-            elif SCRAPER_TYPE == 'store':
-                logger.debug("CALLING STORES")
-                ms_id = stream_monitor('master', params={})
-                st_id = 1
-                call_stores(ms_id, st_id)
-            else:
-                logger.warning('Please indicate the argument type of scraping process')
-    except Exception as e:
-        error = "Error while executing master: {}".format(e)
-        logger.error(e)
-        ms_id = stream_monitor('master', params={})
-        es_id = stream_monitor('error', ms_id=ms_id, code=2, reason=e)
+    logger.info("Started master scraper: " + CELERY_QUEUE + " / scraper_type: "+str(SCRAPER_TYPE))
+    if SCRAPER_TYPE and len(SCRAPER_TYPE) > 0:
+        if SCRAPER_TYPE == 'price' or SCRAPER_TYPE == 'item':
+            # Fetch Valid Stores
+            sts_to_crawl = request_valid_stores(str(SCRAPER_TYPE))
+            logger.debug(sts_to_crawl[0])
+            # Number of stores to crawl
+            num_stores = range(0, len(sts_to_crawl))
+            ms_id = stream_monitor('master', params=sts_to_crawl[0], num_stores=len(sts_to_crawl))
+            logger.info("Crawling {} stores!".format(STORES if len(sts_to_crawl) > int(STORES) else len(sts_to_crawl)))
+            # Call to crawl all stores async
+            for s in num_stores:
+                logger.debug("Calling to scrape")
+                call_scraper(sts_to_crawl[s], ms_id)
+                # call_parallel(sts_to_crawl[s], ms_id)
+        elif SCRAPER_TYPE == 'store':
+            logger.debug("CALLING STORES")
+            ms_id = stream_monitor('master', params={})
+            st_id = 1
+            call_stores(ms_id, st_id)
+        else:
+            logger.warning('Please indicate the argument type of scraping process')
