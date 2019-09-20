@@ -35,7 +35,7 @@ node {
                     clusterName: 'scraper-cluster-production-zonal-highcpu',
                     namespace: 'default'
                     ]) {
-      sh 'kubectl apply -f job-prod.yaml'
+      sh 'kubectl apply -f job-prod-store.yaml'
       sh 'sleep 2m'
       sh 'kubectl get jobs'
     }
