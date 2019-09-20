@@ -77,6 +77,7 @@ def get_stores(params):
         logger.error("Error in : " + str(e))
     return True
 
+
 def create_st_dict(loc):
     st_id = loc.get('store_id')
     if st_id is not None:
@@ -103,7 +104,9 @@ def create_st_dict(loc):
 
 
 def get_stores_from_coords(lat, lng):
-    url_coord = "https://www.rappi.com.mx/api-services/api/base-crack/principal?lat={}&lng={}&device=2"
+    url_coord = "https://services.mxgrability.rappi.com/api/base-crack/principal?lat={}&lng={}&device=2"
+    br = ByRequest(attempts=2)
+    br.add_proxy(OXYLABS, attempts=5, name="Oxylabs")
     if not isinstance(lat, float):
         try:
             lat = float(lat)
@@ -125,7 +128,7 @@ def get_stores_from_coords(lat, lng):
         # pprint(resp)
         return extract_stores(resp)
     else:
-        logger.error('Not a valid response')
+        logger.error('Not a valid response, check if the site changed')
     return []
 
 
