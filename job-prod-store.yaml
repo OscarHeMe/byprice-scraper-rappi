@@ -1,5 +1,5 @@
 # todo Use preemptive VMs
-# todo better way to run SCRAPER_TYPE=price
+# todo better way to run SCRAPER_TYPE=store
 # todo check the best way to run master  preHook, postHook maybe
 # todo logging
 # todo change parallelism and completions
@@ -8,7 +8,7 @@
 apiVersion: batch/v1
 kind: Job
 metadata:
-  name: rappi-price-scraper-production
+  name: rappi-store-scraper-production
   namespace: default
   labels:
     retailer: rappi
@@ -34,7 +34,7 @@ spec:
     spec:
       restartPolicy: OnFailure
       containers:
-      - name: rappi-price-scraper
+      - name: rappi-store-scraper
         image: gcr.io/byprice-backend/production/byprice-scraper-rappi:master
         imagePullPolicy: Always
         resources:

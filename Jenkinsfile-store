@@ -13,7 +13,7 @@ node {
                     namespace: 'default'
                     ]) {
 
-            sh 'kubectl delete job rappi-price-scraper-production'
+            sh 'kubectl delete job rappi-store-scraper-production'
             sh 'sleep 2m'
         }
     }
