@@ -42,21 +42,6 @@ ENV QUEUE_GEOPRICE='geoprice'
 ENV SMONITOR=smonitor
 ENV SRV_GEOLOCATION='gate.byprice.com/bpgeolocation'
 
-# Python install and packages
-RUN apt-get install -y \
-    tar \
-    git \
-    curl \
-    nano \
-    build-essential \
-    python3.6 \
-    python3-dev \
-    python3-pip \
-    libssl-dev \
-    libffi-dev \
-    && apt-get autoremove \
-    && apt-get clean
-
 COPY ./ /byprice-scraper-rappi/
 RUN mkdir /byprice-scraper-rappi/logs
 
