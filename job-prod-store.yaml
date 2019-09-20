@@ -1,0 +1,62 @@
+# todo Use preemptive VMs
+# todo better way to run SCRAPER_TYPE=price
+# todo check the best way to run master  preHook, postHook maybe
+# todo logging
+# todo change parallelism and completions
+# todo set required resources
+# todo separate master and worker
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: rappi-price-scraper-production
+  namespace: default
+  labels:
+    retailer: rappi
+    app: scraper
+    env: production
+    scraper-type: store
+    owner: oscar
+    version: v0.1
+spec:
+  parallelism: 1
+  completions: 1
+  # ttlSecondsAfterFinished: 3600 not stable yet
+  backoffLimit: 5
+  template:
+    metadata:
+      labels:
+        retailer: rappi
+        app: scraper
+        env: production
+        scraper-type: store
+        owner: oscar
+        version: v0.1
+    spec:
+      restartPolicy: OnFailure
+      containers:
+      - name: rappi-price-scraper
+        image: gcr.io/byprice-backend/production/byprice-scraper-rappi:master
+        imagePullPolicy: Always
+        resources:
+          limits:
+            memory: 1024Mi
+          requests:
+            cpu: 256m
+            memory: 256Mi
+        command: ['/bin/bash' , '-c', 'echo Starting container !! && export SCRAPER_TYPE=store && ./run.sh']
+        env:
+        - name: "STREAMER_PASS"
+          valueFrom:
+            secretKeyRef:
+              name: scraper-secret
+              key: STREAMER_PASS
+        - name: "CELERY_PASS"
+          valueFrom:
+            secretKeyRef:
+              name: scraper-secret
+              key: CELERY_PASS
+        - name: "OXYLABS"
+          valueFrom:
+            secretKeyRef:
+              name: scraper-secret
+              key: OXYLABS

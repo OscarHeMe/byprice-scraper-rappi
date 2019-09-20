@@ -49,7 +49,7 @@ RUN apt-get install -y \
     curl \
     nano \
     build-essential \
-    python3.6 \
+    python3.4 \
     python3-dev \
     python3-pip \
     libssl-dev \
