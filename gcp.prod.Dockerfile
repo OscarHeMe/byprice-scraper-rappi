@@ -1,5 +1,5 @@
 # Dockerfile for celery worker
-FROM byprice/byprice-base-scraper
+FROM byprice/base-scraper:python3.6
 
 # Ubuntu default encoding
 ENV LC_ALL=C.UTF-8
@@ -41,21 +41,6 @@ ENV QUEUE_GEOPRICE='geoprice'
 # Services
 ENV SMONITOR=smonitor
 ENV SRV_GEOLOCATION='gate.byprice.com/bpgeolocation'
-
-# Python install and packages
-RUN apt-get install -y \
-    tar \
-    git \
-    curl \
-    nano \
-    build-essential \
-    python3.4 \
-    python3-dev \
-    python3-pip \
-    libssl-dev \
-    libffi-dev \
-    && apt-get autoremove \
-    && apt-get clean
 
 COPY ./ /byprice-scraper-rappi/
 RUN mkdir /byprice-scraper-rappi/logs
