@@ -108,3 +108,5 @@ venv.bak/
 
 # CACHED files
 *~lock.*
+
+*.csv
