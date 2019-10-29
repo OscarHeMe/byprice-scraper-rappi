@@ -28,6 +28,7 @@ base_url = 'https://www.rappi.com.mx/'
 url_store = 'https://services.mxgrability.rappi.com/windu/corridors/sub_corridors/store/{}'
 url_cat = 'https://services.mxgrability.rappi.com/api/subcorridor_sections/products?subcorridor_id={}&store_id={}&include_stock_out=true&limit={}'
 url_image = 'https://images.rappi.com.mx/products/{}'
+url_zip = "http://" + SRV_GEOLOCATION + "/place/get_places?zip={}"
 url_product = base_url + 'product/{}'
 
 LIMIT = 200
@@ -61,19 +62,20 @@ def start_stores(master_id, st_id):
 
 
 def get_zip():
-    z_list = ['01000','44100','64000']#,'76000','50000']
-    z_list = list(pd.read_csv('files/zips.csv')['zip'])
+    try:
+        z_list = list(pd.read_csv('files/zips.csv')['zip'])
+    except:
+        z_list = ['01000','44100','64000']#,'76000','50000']
     return z_list
 
 
 def get_stores(params):
     errors = []
-    url_zip = "http://" + SRV_GEOLOCATION + "/place/get_places?zip={}"
     br_stats = {}
     try:
         # Obtain Rappi stores for each ZIP
         for zip_code in get_zip():
-            process_zip.apply_async(args=(zip_code), queue=CELERY_QUEUE)
+            process_zip.apply_async(args=(zip_code,), queue=CELERY_QUEUE)
 
         if len(errors) > 0:
             ws_id = stream_monitor('worker', step='store', ms_id=params['ms_id'], store_id=params['store_id'], br_stats=br_stats)
@@ -85,7 +87,7 @@ def get_stores(params):
     except Exception as e:
         ws_id = stream_monitor('worker', step='store', value=1, ms_id=params['ms_id'], store_id=params['store_id'], br_stats=br_stats)
         es_id = stream_monitor('error', ws_id=ws_id, store_id=params['store_id'], code=2, reason=str(e))
-        logger.error("Error in : " + str(e))
+        logger.error("Error in get_stores: " + str(e))
     return True
 
 
