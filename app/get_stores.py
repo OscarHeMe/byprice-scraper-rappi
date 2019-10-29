@@ -1,13 +1,15 @@
 # -*- coding: utf-8 -*-
 import datetime
 from pprint import pprint
+from worker import app
+import pandas as pd
 
 from ByHelpers import applogger
 from ByHelpers.rabbit_engine import (MonitorException, stream_info,
                                      stream_monitor)
 from ByRequests.ByRequests import ByRequest
 
-from config import OXYLABS, SRV_GEOLOCATION
+from config import OXYLABS, SRV_GEOLOCATION, CELERY_QUEUE
 
 logger = applogger.get_logger()
 
@@ -17,6 +19,7 @@ br.add_proxy(OXYLABS, attempts=5, name="Oxylabs")
 
 def get_zip():
     z_list = ['01000','44100','64000']#,'76000','50000']
+    z_list = list(pd.read_csv('files/zips.csv')['zip'])
     return z_list
 
 
@@ -38,27 +41,16 @@ def get_stores(params):
                 logger.debug(places)
                 
                 for place in places:
-                    st_ls = get_stores_from_coords(place['lat'], place['lng'])
-                    for raw_st in st_ls:
-                        try:
-                            gral_data = {
+                    gral_data = {
                                 "state" : place.get('state'),
                                 "country" : "México",
                                 "city" : place.get('city'),
                                 "zip" : place.get('zip'),
                                 "name": 'Rappi ' + raw_st.get('name')
                             }
-                            for loc in raw_st.get('locations', []):
-                                clean_store = create_st_dict(loc)
-                                if isinstance(clean_store, dict):
-                                    clean_store.update(gral_data)
-                                    stream_info(clean_store)
-                        except Exception as ex:
-                            err_st = 'Error with store {}'.format(raw_st)
-                            errors.append(MonitorException(code=3, reason=err_st))
-                            logger.error(err_st)
 
-                    logger.info('Found {} stores for {}'.format(len(st_ls), zip_code))
+                    get_stores_from_coords.apply_async(args=(place['lat'], place['lng'], gral_data), queue=CELERY_QUEUE)
+                    # get_stores_from_coords(place['lat'], place['lng'], gral_data)
             else:
                 err_st = 'Could not get right response from {}'.format(url_zip.format(zip_code))
                 errors.append(MonitorException(code=2, reason=err_st))
@@ -103,34 +95,45 @@ def create_st_dict(loc):
         return None
 
 
-def get_stores_from_coords(lat, lng):
+def get_stores_from_coords(lat, lng, gral_data={}):
     url_coord = "https://services.mxgrability.rappi.com/api/base-crack/principal?lat={}&lng={}&device=2"
     br = ByRequest(attempts=2)
     br.add_proxy(OXYLABS, attempts=5, name="Oxylabs")
-    if not isinstance(lat, float):
-        try:
-            lat = float(lat)
-        except Exception as e:
-            logger.error('Could not convert lat to float')
-            return []
-    lat = round(lat, 3)
-    if not isinstance(lng, float):
-        try:
-            lng = float(lng)
-        except Exception as e:
-            logger.error('Could not convert lng to float')
-            return []
-    lng = round(lng, 3)
+    stores_ls = []
+    lat = frmt_coord(lat)
+    lng = frmt_coord(lng)
     logger.debug('[ByRequest] Requesting {}'.format(url_coord.format(lat, lng)))
     resp = br.get(url_coord.format(lat, lng), return_json=True)
     if isinstance(resp, list):
         logger.debug('Got response')
         # pprint(resp)
-        return extract_stores(resp)
+        stores_ls = extract_stores(resp)
     else:
         logger.error('Not a valid response, check if the site changed')
-    return []
+    for raw_st in stores_ls:
+        try:
+            for loc in raw_st.get('locations', []):
+                clean_store = create_st_dict(loc)
+                if isinstance(clean_store, dict):
+                    clean_store.update(gral_data)
+                    stream_info(clean_store)
+        except Exception as ex:
+            err_st = 'Error with store {}'.format(raw_st)
+            errors.append(MonitorException(code=3, reason=err_st))
+            logger.error(err_st)
 
+    logger.info('Found {} stores for {}'.format(len(stores_ls), zip_code))
+    return stores_ls
+
+
+def frmt_coord(crd):
+    if not isinstance(crd, float):
+        try:
+            crd = float(crd)
+            crd = round(crd, 3)
+        except Exception as e:
+            logger.error('Could not convert lat to float')
+    return crd
 
 
 def extract_stores(st_raw):
