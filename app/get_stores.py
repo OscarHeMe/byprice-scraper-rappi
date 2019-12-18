@@ -79,16 +79,17 @@ stores_dict = {
 def get_ret_key(name):
     key = 'rappi'
     for k, d in stores_dict.items():
+        print(k)
+        print(d)
+        print(name)
         if str(d['name']).lower() in name.lower():
             key = d['key']
     return key
 
-        
-
 
 def get_zip():
     z_list = ['01000','44100','64000']#,'76000','50000']
-    z_list = list(pd.read_csv('files/zips.csv')['zip'])
+    #z_list = list(pd.read_csv('files/zips.csv')['zip'])
     return z_list
 
 
@@ -118,6 +119,7 @@ def get_stores(params):
                                 "name": 'Rappi ' + raw_st.get('name'),
                                 "retailer" : get_ret_key(raw_st.get('name'))
                             }
+                    print(gral_data)
 
                     get_stores_from_coords.apply_async(args=(place['lat'], place['lng'], gral_data), queue=CELERY_QUEUE)
                     # get_stores_from_coords(place['lat'], place['lng'], gral_data)

@@ -4,6 +4,9 @@ import worker
 from app import get_stores
 from pprint import pprint
 from ByHelpers.rabbit_engine import stream_info
+from ByHelpers import applogger
+
+logger = applogger.get_logger()
 
 
 master_id, st_id = 'fake_ms', 'fake_st'
@@ -35,14 +38,14 @@ dep_2_crwl = {
 class RappiTestCase(unittest.TestCase):
     """Rappi unit tests"""
 
-    # @unittest.skip('Already tested')
+    @unittest.skip('Already tested')
     def test_1_get_stores(self):
         print("\n******************Located Stores*******************\n")
         output = get_stores.get_stores_from_coords(params['coords']['lat'], params['coords']['lng'])
         pprint(output)
         self.assertTrue(isinstance(output, list) and (len(output) > 0))
 
-    @unittest.skip('Already tested')
+    # @unittest.skip('Already tested')
     def test_2_start_stores(self):
         print("\n******************Get Stores*******************\n")
         out = worker.start_stores(master_id, params)
@@ -108,9 +111,9 @@ class RappiTestCase(unittest.TestCase):
             count += 1
 
 
-    def test_1_get_stores(self):
-        print("\n******************Located Stores*******************\n")
-        output = get_stores.get_stores_from_coords(params['coords']['lat'], params['coords']['lng'])
+    def test_7_pr_zip(self):
+        print("\n******************Process Zip*******************\n")
+        output = worker.process_zip('06600')
         pprint(output)
         self.assertTrue(isinstance(output, list) and (len(output) > 0))
 
