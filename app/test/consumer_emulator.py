@@ -26,13 +26,13 @@ def callback(ch, method, properties, body):
     if SCRAPER_TYPE == 'store':
         name = elem.get('name', '').replace(',', '.')
         _id = elem.get('external_id', '')
-        addr = elem.get('address', None).replace(',', '')
+        addr = elem.get('address', '').replace(',', '')
         lat = str(elem.get('coords', {}).get('lat', '')).replace(',', '')
         lng = str(elem.get('coords', {}).get('lng', '')).replace(',', '')
         els = [name, _id, addr, lat, lng]
         print(els)
         with open('stores_{}.csv'.format(RETAILER_KEY), 'a') as f:
-            f.write(','.join(els) + '\n')
+            f.write('"' + '","'.join(els) + '"' + '\n')
     global prod_counter
     prod_counter += 1
     print('Received %d items'%prod_counter)

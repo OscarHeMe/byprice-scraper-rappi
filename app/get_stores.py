@@ -16,6 +16,75 @@ logger = applogger.get_logger()
 br = ByRequest(attempts=2)
 br.add_proxy(OXYLABS, attempts=5, name="Oxylabs")  
 
+stores_dict = {
+    'la_comer': {
+        'name': 'La Comer',
+        'key': 'rappi_la_comer'
+    },
+    'costco': {
+        'name': 'Costco', 
+        'key': 'rappi_costco'
+    },
+    'chedraui': {
+        'name': 'Chedraui',
+        'key': 'rappi_chedraui'
+    },
+    'city_market': {
+        'name': 'City Market',
+        'key': 'rappi_city_market'
+    },
+    'heb': {
+        'name': 'HEB',
+        'key': 'rappi_heb'
+    },
+    'fresko': {
+        'name': 'Fresko',
+        'key': 'rappi_fresko'
+    },
+    'san_pablo': {
+        'name': 'San Pablo',
+        'key': 'rappi_san_pablo'
+    },
+    'soriana': {
+        'name': 'Soriana',
+        'key': 'rappi_soriana'
+    },
+    'walmart': {
+        'name': 'Walmart', 
+        'key': 'rappi_walmart'
+    },
+    'benavides': {
+        'name': 'Benavides',
+        'key': 'rappi_benavides'
+    },
+    'farmacias_similares': {
+        'name': 'Farmacias Similares',
+        'key': 'rappi_farmacias_similares'
+    },
+    'la_europea': {
+        'name': 'La Europea',
+        'key': 'rappi_la_europea'
+    },
+    'superama': {
+        'name': 'Superama', 
+        'key': 'rappi_superama'
+    },
+    'f_ahorro': {
+        'name': 'Del Ahorro',
+        'key': 'rappi_f_ahorro'
+    }
+}
+
+
+def get_ret_key(name):
+    key = 'rappi'
+    for k, d in stores_dict.items():
+        if str(d['name']).lower() in name.lower():
+            key = d['key']
+    return key
+
+        
+
 
 def get_zip():
     z_list = ['01000','44100','64000']#,'76000','50000']
@@ -46,7 +115,8 @@ def get_stores(params):
                                 "country" : "México",
                                 "city" : place.get('city'),
                                 "zip" : place.get('zip'),
-                                "name": 'Rappi ' + raw_st.get('name')
+                                "name": 'Rappi ' + raw_st.get('name'),
+                                "retailer" : get_ret_key(raw_st.get('name'))
                             }
 
                     get_stores_from_coords.apply_async(args=(place['lat'], place['lng'], gral_data), queue=CELERY_QUEUE)
@@ -75,7 +145,6 @@ def create_st_dict(loc):
     if st_id is not None:
         st_dict = {
             "route_key" : "store",
-            "retailer" : "rappi",
             "external_id" : st_id,
             "address" : "",
             "street" : "",
@@ -122,7 +191,7 @@ def get_stores_from_coords(lat, lng, gral_data={}):
             errors.append(MonitorException(code=3, reason=err_st))
             logger.error(err_st)
 
-    logger.info('Found {} stores for {}'.format(len(stores_ls), zip_code))
+    logger.info('Found {} stores'.format(len(stores_ls)))
     return stores_ls
 
 

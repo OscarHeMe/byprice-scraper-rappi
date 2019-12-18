@@ -35,7 +35,7 @@ dep_2_crwl = {
 class RappiTestCase(unittest.TestCase):
     """Rappi unit tests"""
 
-    @unittest.skip('Already tested')
+    # @unittest.skip('Already tested')
     def test_1_get_stores(self):
         print("\n******************Located Stores*******************\n")
         output = get_stores.get_stores_from_coords(params['coords']['lat'], params['coords']['lng'])
@@ -62,14 +62,14 @@ class RappiTestCase(unittest.TestCase):
         pprint(output)
         self.assertTrue(isinstance(output, list) and (len(output) > 0))
 
-    # @unittest.skip('Already tested')
+    @unittest.skip('Already tested')
     def test_1_get_stores(self):
         print("\n******************Located Stores*******************\n")
         output = get_stores.get_stores(params)
         pprint(output)
         self.assertTrue(isinstance(output, list) and (len(output) > 0))
 
-
+    @unittest.skip('Already tested')
     def test_6_send_items(self):
         print("\n******************Send items*******************\n")
         count = 1
@@ -106,6 +106,13 @@ class RappiTestCase(unittest.TestCase):
             #    break
 
             count += 1
+
+
+    def test_1_get_stores(self):
+        print("\n******************Located Stores*******************\n")
+        output = get_stores.get_stores_from_coords(params['coords']['lat'], params['coords']['lng'])
+        pprint(output)
+        self.assertTrue(isinstance(output, list) and (len(output) > 0))
 
         
 

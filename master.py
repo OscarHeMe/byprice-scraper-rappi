@@ -16,13 +16,13 @@ br = ByRequest(attempts=2)
 # URLS
 geoloc_host = 'http://' + str(SRV_GEOLOCATION)
 stores_endp_url = geoloc_host +'/store/retailer?key=%s'
-base_url = "https://super.walmart.com.mx"
 
 
 #Variables
 retailer_key = 'rappi'
 retailer_name = 'Rappi'
 
+retailers_to_get = ['rappi_farmacias_similares', 'rappi_benavides']
 
 def call_scraper(params, ms_id):
     """ Call to crawl async elements
@@ -34,7 +34,7 @@ def call_scraper(params, ms_id):
         ms_id: uuid
             Master scraper ID 
     """
-    logger.debug("Calling to scrape store...")
+    logger.debug("Calling to scrape store: {} - {}".format(params.get('name'), params.get('external_id')))
     crawl_store.apply_async(args=(ms_id, params), queue=CELERY_QUEUE)
 
 
@@ -51,7 +51,7 @@ def call_stores(ms_id, st_id):
     start_stores.apply_async(args=(ms_id, st_id), queue=CELERY_QUEUE)
 
 
-def request_valid_stores(rt_key):
+def request_valid_stores(keys, rt_key):
     """ Method that requests valid stores to geolocation endpoint
 
         Params:
@@ -59,22 +59,25 @@ def request_valid_stores(rt_key):
         rt_key : str
             Routing Key (store, item, price)
     """
-    # Fetch stores info from Geolocation Service
-    r = br.get(stores_endp_url%retailer_key)
-    if not r:
-        print('Request error to geolocation service!')
-        return
-    stores_d = r.json()
-    stores_list = [
-        {
-            'route_key' : rt_key.lower(),
-            'retailer_key': 'rappi',
-            'external_id' : st['external_id'],
-            'store_uuid'  : st['uuid'],
-            'name'        : st['name']
-        } for st in stores_d
-    ]
-    return stores_list[: int(STORES)]
+    all_st = []
+    for retailer in keys:
+        # Fetch stores info from Geolocation Service
+        r = br.get(stores_endp_url%retailer)
+        if not r:
+            print('Request error to geolocation service!')
+            return
+        stores_d = r.json()
+        stores_list = [
+            {
+                'route_key' : rt_key.lower(),
+                'retailer_key': retailer,
+                'external_id' : st['external_id'],
+                'store_uuid'  : st['uuid'],
+                'name'        : st['name']
+            } for st in stores_d
+        ]
+        all_st.extend(stores_list)
+    return all_st[: int(STORES)]
 
 
 
@@ -84,7 +87,7 @@ if __name__ == '__main__':
     if SCRAPER_TYPE and len(SCRAPER_TYPE) > 0:
         if SCRAPER_TYPE == 'price' or SCRAPER_TYPE == 'item':
             # Fetch Valid Stores
-            sts_to_crawl = request_valid_stores(str(SCRAPER_TYPE))
+            sts_to_crawl = request_valid_stores(retailers_to_get, str(SCRAPER_TYPE))
             logger.debug(sts_to_crawl[0])
             # Number of stores to crawl
             num_stores = range(0, len(sts_to_crawl))
