@@ -13,7 +13,7 @@ ENV REGION='DEFAULT'
 ENV LOG_LEVEL='INFO'
 ENV LOG_PORT=27971
 ENV LOG_HOST='localhost'
-ENV STORES=160
+ENV STORES=600
 
 # Streamer
 ENV STREAMER='rabbitmq'
@@ -40,7 +40,7 @@ ENV QUEUE_GEOPRICE='geoprice'
 
 # Services
 ENV SMONITOR=smonitor
-ENV SRV_GEOLOCATION='gate.byprice.com/bpgeolocation'
+ENV SRV_GEOLOCATION='geolocation.api.byprice.com'
 
 COPY ./ /byprice-scraper-rappi/
 RUN mkdir /byprice-scraper-rappi/logs
