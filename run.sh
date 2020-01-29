@@ -6,7 +6,7 @@ echo "[$(date)][RAPPI]: Started."
 echo "Activating virtual environment"
 source env/bin/activate
 
-export CONCURRENCY=1
+export CONCURRENCY=6
 export WORKER=1
 export CELERY_QUEUE="$RETAILER_KEY"_"$SCRAPER_TYPE"
 
