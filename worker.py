@@ -331,8 +331,8 @@ def get_store_deps(params):
         if response:
             # Add departments
             for dep in response:
-                if (int(dep.get('index', 0)) > 1) and (int(dep.get('index', 0)) < 100):
-                    dep_list.append(extract_info(dep))
+                dep_list.append(extract_info(dep))
+
         else:
             err_st = 'Could not get response for {}'.format(url_store.format(store_id))
             logger.error(err_st)
