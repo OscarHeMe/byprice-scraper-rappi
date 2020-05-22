@@ -3,6 +3,7 @@ import datetime
 from pprint import pprint
 
 import pandas as pd
+import celery
 from ByRequests.ByRequests import ByRequest
 from celery import Celery
 
@@ -96,6 +97,13 @@ broker = 'amqp://{}:{}@{}:{}/{}'.format(
                 CELERY_USER, CELERY_PASS, CELERY_BROKER, CELERY_PORT, CELERY_VIRTUAL_HOST)
 
 queue = CELERY_QUEUE
+
+
+# Avoid Celery extra logging
+@celery.signals.setup_logging.connect
+def on_setup_logging(**kwargs):
+    pass
+
 
 # Celery app initilaization
 app = Celery('worker', broker=broker)
