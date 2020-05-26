@@ -418,7 +418,6 @@ def crawl_cat(dep_name, scat, params, page=1, run_all=True):
                         'categories': cat_ls,
                     })
                     prods_ls.append(prod_clean)
-                    logger.info('Streaming')
                     stream_info(prod_clean)
                 else:
                     err = 'Could not get product'
