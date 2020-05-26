@@ -38,14 +38,14 @@ dep_2_crwl = {
 class RappiTestCase(unittest.TestCase):
     """Rappi unit tests"""
 
-    @unittest.skip('Already tested')
+    # @unittest.skip('Already tested')
     def test_1_get_stores(self):
         print("\n******************Located Stores*******************\n")
         output = get_stores.get_stores_from_coords(params['coords']['lat'], params['coords']['lng'])
         pprint(output)
         self.assertTrue(isinstance(output, list) and (len(output) > 0))
 
-    # @unittest.skip('Already tested')
+    @unittest.skip('Already tested')
     def test_2_start_stores(self):
         print("\n******************Get Stores*******************\n")
         out = worker.start_stores(master_id, params)

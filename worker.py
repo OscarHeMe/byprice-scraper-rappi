@@ -22,6 +22,11 @@ logger = applogger.get_logger()
 br = ByRequest(attempts=1)
 br.add_proxy(OXYLABS, attempts=2, name="Oxylabs")  
 
+# Avoid Celery extra logging
+@celery.signals.setup_logging.connect
+def on_setup_logging(**kwargs):
+    pass
+
 stores_dict = {
     'la_comer': {
         'name': 'La Comer',
@@ -78,6 +83,14 @@ stores_dict = {
     'f_ahorro': {
         'name': 'Del Ahorro',
         'key': 'rappi_f_ahorro'
+    },
+    'farmatodo': {
+        'name': 'Farmatodo',
+        'key': 'rappi_farmatodo'
+    },
+    'farmazone': {
+        'name': 'Farma Zone',
+        'key': 'rappi_farmazone'
     }
 }
 
@@ -99,12 +112,6 @@ broker = 'amqp://{}:{}@{}:{}/{}'.format(
 queue = CELERY_QUEUE
 
 
-# Avoid Celery extra logging
-@celery.signals.setup_logging.connect
-def on_setup_logging(**kwargs):
-    pass
-
-
 # Celery app initilaization
 app = Celery('worker', broker=broker)
 app.conf.task_routes = {'worker.*': {'queue': queue}}
@@ -113,10 +120,10 @@ app.conf.CELERY_ACCEPT_CONTENT = ['json']
 app.conf.CELERY_RESULT_SERIALIZER = 'json'
 app.conf.CELERY_TASK_SERIALIZER = 'json'
 
-app.conf.update({
-    'worker_hijack_root_logger': False, # so celery does not set up its loggers
-    'worker_redirect_stdouts': False, # so celery does not redirect its logs
-})
+# app.conf.update({
+#     'worker_hijack_root_logger': False, # so celery does not set up its loggers
+#     'worker_redirect_stdouts': False, # so celery does not redirect its logs
+# })
 
 
 @app.task
@@ -189,10 +196,8 @@ def process_zip(zip_code):
 
 def get_ret_key(name):
     key = 'rappi'
+    logger.debug('Store name: {}'.format(name))
     for k, d in stores_dict.items():
-        print(k)
-        print(d)
-        print(name)
         if str(d['name']).lower() in name.lower():
             key = d['key']
     return key
@@ -245,9 +250,10 @@ def get_stores_from_coords(lat, lng, gral_data={}):
             for loc in raw_st.get('locations', []):
                 clean_store = create_st_dict(loc, raw_st.get('name'))
                 if isinstance(clean_store, dict):
-                    clean_store.update(gral_data)
-                    logger.debug(clean_store)
-                    stream_info(clean_store)
+                    if clean_store['retailer'] != 'rappi':
+                        clean_store.update(gral_data)
+                        logger.debug(clean_store)
+                        stream_info(clean_store)
         except Exception as ex:
             err_st = 'Error with store {}'.format(raw_st)
             errors.append(MonitorException(code=3, reason=err_st))
