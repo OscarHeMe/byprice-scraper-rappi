@@ -14,6 +14,11 @@ from config import *
 # from app.get_stores import get_stores, get_stores_from_coords
 # from config import CELERY_QUEUE, OXYLABS, SRV_GEOLOCATION
 
+# Avoid Celery extra logging
+@celery.signals.setup_logging.connect
+def on_setup_logging(**kwargs):
+    pass
+
 # logging
 applogger.create_logger()
 logger = applogger.get_logger()
@@ -21,11 +26,6 @@ logger = applogger.get_logger()
 
 br = ByRequest(attempts=1)
 br.add_proxy(OXYLABS, attempts=2, name="Oxylabs")  
-
-# Avoid Celery extra logging
-@celery.signals.setup_logging.connect
-def on_setup_logging(**kwargs):
-    pass
 
 stores_dict = {
     'la_comer': {
