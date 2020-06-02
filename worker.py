@@ -417,7 +417,7 @@ def crawl_cat(dep_name, scat, params, page=1, next_id=None, run_all=True):
 
         if (next_id is not None) and run_all:
             logger.debug('Found next page...')
-            crawl_cat(dep_name, scat, params, page=page+1, next_id=next_id)
+            # crawl_cat(dep_name, scat, params, page=page+1, next_id=next_id)
             crawl_cat.apply_async(args=(dep_name, scat, params, page+1, next_id), queue=CELERY_QUEUE)
         for prod in prod_raw_ls:
             try:
