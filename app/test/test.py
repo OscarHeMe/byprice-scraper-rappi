@@ -14,31 +14,41 @@ master_id, st_id = 'fake_ms', 'fake_st'
 params = {
     'route_key'   : 'price',
     'retailer_key': 'rappi',
-    'external_id' : '990008569',
+    'external_id' : '167000243',
     'coords'      : {
-        'lat': '19.432559',
-        'lng': '-99.133247'
+        'lat': 19.5023,
+        'lng': -99.2523,
     },
     'store_uuid'  : 'fake_st_uuid',
     'ms_id'       : master_id,
     'store_id'    : st_id
 }
 
+
 dep_2_crwl = {
-    'id': 292,
-    'name': 'Suplementos',
+        'id': 0,
+        'name': 'Ofertas',
+        'sub_dep': [
+            {'id': 554894, 'name': 'Junio al 100'},
+            {'id': 539859, 'name': ' Promos de Locura'},
+            {'id': 524139, 'name': '🏆⭐ Top Sellers ⭐🏆'},
+        ]
+}
+
+
+dep_2_crwl = {
+    'id': 35946,
+    'name': 'Higiene y Cuidado Personal',
     'sub_dep': [
-        {'id': 15725, 'name': 'Suplementos'},
-        {'id': 15726, 'name': 'Suplementos Nutricionales'},
-        {'id': 15727, 'name': 'Vitaminas y Minerales'}
+        {'id': 35953, 'name': 'Jabones'},
     ]
-} 
+}
 
 
 class RappiTestCase(unittest.TestCase):
     """Rappi unit tests"""
 
-    # @unittest.skip('Already tested')
+    @unittest.skip('Already tested')
     def test_1_get_stores(self):
         print("\n******************Located Stores*******************\n")
         output = get_stores.get_stores_from_coords(params['coords']['lat'], params['coords']['lng'])
@@ -58,10 +68,10 @@ class RappiTestCase(unittest.TestCase):
         pprint(output)
         self.assertTrue(isinstance(output, list) and (len(output) > 0))
 
-    @unittest.skip('Already tested')
+    # @unittest.skip('Already tested')
     def test_4_crawl_cats(self):
         print("\n******************Crawl Categories*******************\n")
-        output = worker.crawl_cat(dep_2_crwl['name'], dep_2_crwl['sub_dep'][0], params, run_all=False)
+        output = worker.crawl_cat(dep_2_crwl['name'], dep_2_crwl['sub_dep'][0], params, run_all=True)
         pprint(output)
         self.assertTrue(isinstance(output, list) and (len(output) > 0))
 
@@ -110,7 +120,7 @@ class RappiTestCase(unittest.TestCase):
 
             count += 1
 
-
+    @unittest.skip('Already tested')
     def test_7_pr_zip(self):
         print("\n******************Process Zip*******************\n")
         output = worker.process_zip('06600')

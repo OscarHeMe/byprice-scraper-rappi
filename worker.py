@@ -377,29 +377,32 @@ def extract_info(raw_dep_dict):
 
 
 @app.task
-def crawl_cat(dep_name, scat, params, page=1, run_all=True):
+def crawl_cat(dep_name, scat, params, page=1, next_id=None, run_all=True):
     br_stats = {}
     br = ByRequest(attempts=1)
     br.add_proxy(OXYLABS, attempts=3, name='Oxylabs')
     errors = []
 
+
+
     # Url creation
     url = url_cat.format(scat['id'], params['external_id'], LIMIT)
-    if page != 1:
-        url = url + '&next_id={}'.format(LIMIT)
+    if next_id is not None:
+        url = url + '&next_id={}'.format(next_id)
 
     logger.debug('[ByRequest] Requesting {}'.format(url))
     
     try:
         response = br.get(url, return_json=True)
         br_stats = br.stats
-    
+        next_id = None
         prod_raw_ls = []
         prods_ls = []
         cat_ls = [dep_name, scat['name']]
 
         # Product list extraction
         if isinstance(response, dict):
+            next_id = response.get('next_id')
             result = response.get('results', [])
             for res in result:
                 prod_raw_ls.extend(res.get('products', []))
@@ -412,10 +415,10 @@ def crawl_cat(dep_name, scat, params, page=1, run_all=True):
         n_prod = len(prod_raw_ls)
         logger.info('Found {} products in page {} for {}'.format(n_prod, page, ' - '.join(cat_ls)))
 
-        if (n_prod == LIMIT) and run_all:
+        if (next_id is not None) and run_all:
             logger.debug('Found next page...')
-            # crawl_cat(dep_name, scat, params, page=page+1)
-            crawl_cat.apply_async(args=(dep_name, scat, params, page+1), queue=CELERY_QUEUE)
+            crawl_cat(dep_name, scat, params, page=page+1, next_id=next_id)
+            crawl_cat.apply_async(args=(dep_name, scat, params, page+1, next_id), queue=CELERY_QUEUE)
         for prod in prod_raw_ls:
             try:
                 prod_clean = process_prod(prod, params)
