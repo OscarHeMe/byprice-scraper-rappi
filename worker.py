@@ -413,7 +413,7 @@ def crawl_cat(dep_name, scat, params, page=1, next_id=None, run_all=True):
 
         # Check if there are more products to crawl
         n_prod = len(prod_raw_ls)
-        logger.info('Found {} products in page {} for {}'.format(n_prod, page, ' - '.join(cat_ls)))
+        logger.info('Found {} products, page {} for {} | {}'.format(str(n_prod).ljust(3), str(page).ljust(2), params['retailer_key'], ' | '.join(cat_ls)))
 
         if (next_id is not None) and run_all:
             logger.debug('Found next page...')
