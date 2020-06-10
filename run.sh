@@ -17,4 +17,5 @@ python master.py
 sleep 10s
 
 echo "[$(date)][RAPPI]: Starting 1 worker in foreground mode."
-celery worker -c $CONCURRENCY -n rappi-worker1-%h --pool=eventlet --loglevel=INFO -Q $CELERY_QUEUE -A worker
+celery worker -c $CONCURRENCY -n rappi-worker1-%h --pool=eventlet --loglevel=INFO -Q $CELERY_QUEUE -A worker &
+source check_worker.sh

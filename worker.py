@@ -383,8 +383,6 @@ def crawl_cat(dep_name, scat, params, page=1, next_id=None, run_all=True):
     br.add_proxy(OXYLABS, attempts=3, name='Oxylabs')
     errors = []
 
-
-
     # Url creation
     url = url_cat.format(scat['id'], params['external_id'], LIMIT)
     if next_id is not None:

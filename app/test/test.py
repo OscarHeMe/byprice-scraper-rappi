@@ -14,7 +14,7 @@ master_id, st_id = 'fake_ms', 'fake_st'
 params = {
     'route_key'   : 'price',
     'retailer_key': 'rappi',
-    'external_id' : '167000243',
+    'external_id' : '139123485',
     'coords'      : {
         'lat': 19.5023,
         'lng': -99.2523,
@@ -26,21 +26,10 @@ params = {
 
 
 dep_2_crwl = {
-        'id': 0,
-        'name': 'Ofertas',
-        'sub_dep': [
-            {'id': 554894, 'name': 'Junio al 100'},
-            {'id': 539859, 'name': ' Promos de Locura'},
-            {'id': 524139, 'name': '🏆⭐ Top Sellers ⭐🏆'},
-        ]
-}
-
-
-dep_2_crwl = {
-    'id': 35946,
-    'name': 'Higiene y Cuidado Personal',
+    'id': 23859,
+    'name': 'Medicamentos',
     'sub_dep': [
-        {'id': 35953, 'name': 'Jabones'},
+        {'id': 43759, 'name': 'Medicamentos Eticos'}
     ]
 }
 
@@ -61,14 +50,14 @@ class RappiTestCase(unittest.TestCase):
         out = worker.start_stores(master_id, params)
         self.assertTrue(out)
     
-    @unittest.skip('Already tested')
+    # @unittest.skip('Already tested')
     def test_3_get_deps(self):
         print("\n******************Get Departments*******************\n")
         output = worker.get_store_deps(params)
         pprint(output)
         self.assertTrue(isinstance(output, list) and (len(output) > 0))
 
-    # @unittest.skip('Already tested')
+    @unittest.skip('Already tested')
     def test_4_crawl_cats(self):
         print("\n******************Crawl Categories*******************\n")
         output = worker.crawl_cat(dep_2_crwl['name'], dep_2_crwl['sub_dep'][0], params, run_all=True)
