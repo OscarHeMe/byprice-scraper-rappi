@@ -1,22 +1,21 @@
 #!/bin/bash
 
 count=0
-sleep 900
-max_load=$(uptime | sed -e 's/.*load average: //g' | awk 'BEGIN{FS=", "} {print $3}')
+sleep 600
+max_cpu=$(ps aux | grep $CELERY_QUEUE | grep celery | awk '{print $3}')
 is_alive=1
 
 while (( $is_alive ))
 do
-  load_5_min=$(uptime | sed -e 's/.*load average: //g' | awk 'BEGIN{FS=", "} {print $1}')
-  load_15_min=$(uptime | sed -e 's/.*load average: //g' | awk 'BEGIN{FS=", "} {print $3}')
+  current_cpu=$(ps aux | grep $CELERY_QUEUE | grep celery | awk '{print $3}')
 
-  res=$(echo $load_15_min'>'$max_load | bc -l)
+  res=$(echo $current_cpu'>'$max_cpu | bc -l)
   if (( $res ))
   then
-    max_load=$load_15_min
+    max_cpu=$current_cpu
   fi
 
-  res=$(echo $load_5_min'<'$(echo 0.30 \* $load_15_min | bc ) | bc -l)
+  res=$(echo $current_cpu'<'$(echo 0.30 \* $max_cpu | bc ) | bc -l)
   if (( $res ))
   then
     ((count+=1))
@@ -30,12 +29,11 @@ do
     echo "Shutting down"
     # wait a little bit more before actually pulling the plug
     sleep 10
-    kill -9 $(ps aux | grep $CELERY_QUEUE | awk '{print $2}')
-    kill -9 $(ps aux | grep celery | awk '{print $2}')
+    kill -9 $(ps aux | grep $CELERY_QUEUE | grep celery | awk '{print $2}')
     is_alive=0
   fi
 
-  echo "Max load: "$max_load", Load last 15 min: "$load_15_min", Load last 5 min: "$load_5_min
+  echo "Max CPU: "$max_cpu", Current CPU: "$current_cpu
   sleep 300
 
 done

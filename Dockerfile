@@ -32,16 +32,17 @@ ENV LC_ALL=C.UTF-8
 ENV LANG=C.UTF-8
 
 COPY ./ /byprice-scraper-rappi/
-RUN mkdir -p /byprice-scraper-rappi/logs
+RUN mkdir /byprice-scraper-rappi/logs
+
+# Install server stuff
+RUN pip install \
+    virtualenv
 
 # Change workdir
 WORKDIR /byprice-scraper-rappi
 
+RUN chmod +x run.sh
+
 RUN virtualenv env && env/bin/pip install -r requirements.txt
 
-VOLUME /var/log/byprice-rappi
-
-# Add the entry point script to run
-ADD ./run_worker.sh /byprice-scraper-rappi/
-
-# No entrypoint
+VOLUME /var/log/byprice-scrapers
