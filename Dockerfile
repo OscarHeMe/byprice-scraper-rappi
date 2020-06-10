@@ -1,6 +1,8 @@
 # Dockerfile for celery worker
 FROM byprice/base-scraper:python3.6
 
+RUN apt-get install bc
+
 # App & Logging
 ENV APP_NAME='byprice-scraper-rappi'
 ENV LOG_LEVEL='INFO'

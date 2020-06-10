@@ -1,6 +1,8 @@
 # Dockerfile for celery worker
 FROM byprice/base-scraper:python3.6
 
+RUN apt-get install bc
+
 # Ubuntu default encoding
 ENV LC_ALL=C.UTF-8
 ENV LANG=C.UTF-8
