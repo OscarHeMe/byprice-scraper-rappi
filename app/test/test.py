@@ -37,6 +37,9 @@ dep_2_crwl = {
 class RappiTestCase(unittest.TestCase):
     """Rappi unit tests"""
 
+    def setUp(self):
+        worker.app.conf.update(CELERY_ALWAYS_EAGER=True)
+
     @unittest.skip('Already tested')
     def test_1_get_stores(self):
         print("\n******************Located Stores*******************\n")
@@ -44,13 +47,13 @@ class RappiTestCase(unittest.TestCase):
         pprint(output)
         self.assertTrue(isinstance(output, list) and (len(output) > 0))
 
-    @unittest.skip('Already tested')
+    # @unittest.skip('Already tested')
     def test_2_start_stores(self):
         print("\n******************Get Stores*******************\n")
         out = worker.start_stores(master_id, params)
         self.assertTrue(out)
     
-    # @unittest.skip('Already tested')
+    @unittest.skip('Already tested')
     def test_3_get_deps(self):
         print("\n******************Get Departments*******************\n")
         output = worker.get_store_deps(params)

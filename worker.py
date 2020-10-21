@@ -91,6 +91,10 @@ stores_dict = {
     'farmazone': {
         'name': 'Farma Zone',
         'key': 'rappi_farmazone'
+    },
+    'farmaciasguadalajara': {
+        'name': 'Farmacias Guadalajara',
+        'key': 'rappi_farmaciasguadalajara'
     }
 }
 
@@ -139,7 +143,7 @@ def get_zip():
     try:
         z_list = list(pd.read_csv('files/zips.csv')['zip'])
     except:
-        z_list = ['01000','44100','64000']#,'76000','50000']
+        z_list = ['03400', '01000','44100','64000']#,'76000','50000']
     return z_list
 
 

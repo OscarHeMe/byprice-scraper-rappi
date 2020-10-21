@@ -22,7 +22,7 @@ stores_endp_url = geoloc_host +'/store/retailer?key=%s'
 retailer_key = 'rappi'
 retailer_name = 'Rappi'
 
-retailers_to_get = ['rappi_farmacias_similares', 'rappi_benavides']
+retailers_to_get = ['rappi_farmaciasguadalajara', 'rappi_farmazone', 'rappi_farmacias_similares', 'rappi_benavides']
 
 def call_scraper(params, ms_id):
     """ Call to crawl async elements
@@ -67,6 +67,8 @@ def request_valid_stores(keys, rt_key):
             print('Request error to geolocation service!')
             return
         stores_d = r.json()
+        if rt_key == 'item':
+            stores_d = [random.choice(stores_d)]
         stores_list = [
             {
                 'route_key' : rt_key.lower(),
@@ -74,10 +76,10 @@ def request_valid_stores(keys, rt_key):
                 'external_id' : st['external_id'],
                 'store_uuid'  : st['uuid'],
                 'name'        : st['name']
-            } for st in stores_d
+            } for st in stores_d[: int(STORES)]
         ]
         all_st.extend(stores_list)
-    return all_st[: int(STORES)]
+    return all_st
 
 
 
