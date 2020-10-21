@@ -94,7 +94,7 @@ if __name__ == '__main__':
             # Number of stores to crawl
             num_stores = range(0, len(sts_to_crawl))
             ms_id = stream_monitor('master', params=sts_to_crawl[0], num_stores=len(sts_to_crawl))
-            logger.info("Crawling {} stores!".format(STORES if len(sts_to_crawl) > int(STORES) else len(sts_to_crawl)))
+            logger.info("Crawling {} stores!".format(len(sts_to_crawl)))
             # Call to crawl all stores async
             for s in num_stores:
                 logger.debug("Calling to scrape")
