@@ -10,6 +10,7 @@ from celery import Celery
 from ByHelpers import applogger
 from ByHelpers.rabbit_engine import (MonitorException, stream_info,
                                      stream_monitor)
+from app.crawler.api_crawler import StoreCrawler
 from config import *
 # from app.get_stores import get_stores, get_stores_from_coords
 # from config import CELERY_QUEUE, OXYLABS, SRV_GEOLOCATION
@@ -311,22 +312,25 @@ def extract_stores(st_raw):
 
 @app.task
 def crawl_store(master_id, params):
-    monitor_dict = { 
-        'ms_id'   : master_id,
-        'store_id': params['store_uuid'],
-    }
-    params.update(monitor_dict)
-    logger.debug(params)
-    all_deps = get_store_deps(params)
-    for dep in all_deps:
-        scount = 0
-        for scat in dep['sub_dep']:
-            scount += 1
-            # crawl_cat(dep['name'], scat, params)
-            crawl_cat.apply_async(args=(dep['name'], scat, params), queue=CELERY_QUEUE)
-        logger.info('{} Subcategories in {}'.format(scount, dep['name']))
-    logger.info('Found {} departments in store {}'.format(len(all_deps), params['name']))
-    return all_deps
+    crawler = StoreCrawler()
+    output = crawler.crawl_store(params)
+    # monitor_dict = { 
+    #     'ms_id'   : master_id,
+    #     'store_id': params['store_uuid'],
+    # }
+    # params.update(monitor_dict)
+    # logger.debug(params)
+    # all_deps = get_store_deps(params)
+    # for dep in all_deps:
+    #     scount = 0
+    #     for scat in dep['sub_dep']:
+    #         scount += 1
+    #         # crawl_cat(dep['name'], scat, params)
+    #         crawl_cat.apply_async(args=(dep['name'], scat, params), queue=CELERY_QUEUE)
+    #     logger.info('{} Subcategories in {}'.format(scount, dep['name']))
+    # logger.info('Found {} departments in store {}'.format(len(all_deps), params['name']))
+    # return all_deps
+    return output
 
 
 

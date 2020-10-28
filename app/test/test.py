@@ -2,6 +2,7 @@
 import unittest
 import worker
 from app import get_stores
+from app.crawler.api_crawler import StoreCrawler
 from pprint import pprint
 from ByHelpers.rabbit_engine import stream_info
 from ByHelpers import applogger
@@ -33,6 +34,13 @@ dep_2_crwl = {
     ]
 }
 
+category_dict =  {
+    'children_count': None,
+    'id': 29810,
+    'name': 'Huesos y Articulaciones',
+    'total_products': None
+}
+
 
 class RappiTestCase(unittest.TestCase):
     """Rappi unit tests"""
@@ -47,7 +55,7 @@ class RappiTestCase(unittest.TestCase):
         pprint(output)
         self.assertTrue(isinstance(output, list) and (len(output) > 0))
 
-    # @unittest.skip('Already tested')
+    @unittest.skip('Already tested')
     def test_2_start_stores(self):
         print("\n******************Get Stores*******************\n")
         out = worker.start_stores(master_id, params)
@@ -56,16 +64,19 @@ class RappiTestCase(unittest.TestCase):
     @unittest.skip('Already tested')
     def test_3_get_deps(self):
         print("\n******************Get Departments*******************\n")
-        output = worker.get_store_deps(params)
+        crawler = StoreCrawler()
+        output = crawler.get_store_departments(params)
+        pprint(output)
+        output = crawler.get_store_categories(params)
         pprint(output)
         self.assertTrue(isinstance(output, list) and (len(output) > 0))
 
-    @unittest.skip('Already tested')
-    def test_4_crawl_cats(self):
-        print("\n******************Crawl Categories*******************\n")
-        output = worker.crawl_cat(dep_2_crwl['name'], dep_2_crwl['sub_dep'][0], params, run_all=True)
-        pprint(output)
-        self.assertTrue(isinstance(output, list) and (len(output) > 0))
+    # @unittest.skip('Already tested')
+    # def test_4_crawl_cats(self):
+    #     print("\n******************Crawl Categories*******************\n")
+    #     output = worker.crawl_cat(dep_2_crwl['name'], dep_2_crwl['sub_dep'][0], params, run_all=True)
+    #     pprint(output)
+    #     self.assertTrue(isinstance(output, list) and (len(output) > 0))
 
     @unittest.skip('Already tested')
     def test_1_get_stores(self):
@@ -76,44 +87,22 @@ class RappiTestCase(unittest.TestCase):
 
     @unittest.skip('Already tested')
     def test_6_send_items(self):
-        print("\n******************Send items*******************\n")
-        count = 1
-        while True:
-            prod_cl = {
-                "name": "Sodimel 30 Capsulas  ",
-                "route_key": "item",
-                "id": "975728256",
-                "price_original": 628.6,
-                "provider": "",
-                "location": {
-                    "store": ["4eba1f56-dbd3-11e9-8f82-0242ac110002"]
-                }, "raw_attributes": [{"unit": "U", "key": "content", "value": 1}],
-                "retailer": "rappi",
-                "promo": "",
-                "url": "https://www.rappi.com.mx/product/888002_975728256",
-                "description": "Sodimel 30 Capsulas {}".format(count),
-                "discount": 0.0,
-                "categories": ["Farmacia", "Medicamentos"],
-                "price": 707.18,
-                "brand": "Costco",
-                "date": "2019-09-24 20:48:52.701897",
-                "ingredients": [],
-                "gtin": "74849900131",
-                "raw_ingredients": "",
-                "images": ["https://images.rappi.com.mx/products/975728256-1544465989.jpg"]
-            }
-            if count % 100.0 == 0:
-                prod_cl.pop('images')
+        print("\n******************Crawl products*******************\n")
+        crawler = StoreCrawler()
+        output = crawler.get_category_products(category_dict, params)
+        pprint(output)
+        self.assertTrue(isinstance(output, list) and (len(output) > 0))
 
-            stream_info(prod_cl)
-            print('COUNT', count)
-            #if count == 300:
-            #    break
-
-            count += 1
+    # @unittest.skip('Already tested')
+    def test_7_crawl_store(self):
+        print("\n******************Crawl Store*******************\n")
+        crawler = StoreCrawler()
+        output = crawler.crawl_store(params)
+        pprint(output)
+        self.assertTrue(isinstance(output, int) and (output > 0))
 
     @unittest.skip('Already tested')
-    def test_7_pr_zip(self):
+    def test_8_pr_zip(self):
         print("\n******************Process Zip*******************\n")
         output = worker.process_zip('06600')
         pprint(output)
