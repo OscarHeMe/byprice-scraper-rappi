@@ -306,11 +306,11 @@ class StoreCrawler():
         # self.get_store_departments(params)
         # time.sleep(1)
         self.get_store_categories(params)
-        # time.sleep(0.5)
-        # for category_dict in self.cat_list:
-        #     for subcategory_dict in category_dict['children']:
-        #         self.get_category_products(subcategory_dict, params)
-        #     time.sleep(random.randint(2, 4))
-        # self.send_products(params)
-        # return self.total_products
-        return 0
+        time.sleep(0.5)
+        for category_dict in self.cat_list:
+            for subcategory_dict in category_dict['children']:
+                self.get_category_products(subcategory_dict, params)
+            time.sleep(random.randint(2, 4))
+        self.send_products(params)
+        return self.total_products
+        # return 0
