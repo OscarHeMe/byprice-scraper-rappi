@@ -10,20 +10,20 @@ from ByHelpers import applogger
 
 logger = applogger.get_logger()
 
-class StoreCrawler:
-
-    br = ByRequest(attempts=1)
-    br.add_proxy(OXYLABS, attempts=3, name='Oxylabs')
-    _access_token = None
-    url_auth = 'https://services.mxgrability.rappi.com/api/auth/guest_access_token'
-    url_content = 'https://services.mxgrability.rappi.com/api/dynamic/context/content'
-    base_url = 'https://www.rappi.com.mx/'
-    url_image = 'https://images.rappi.com.mx/products/{}'
-    url_product = 'https://www.rappi.com.mx/product/{}'
-    dep_list = []
-    cat_list = []
-    product_list = []
-    total_products = 0
+class StoreCrawler():
+    def __init__(self):
+        self.br = ByRequest(attempts=1)
+        self.br.add_proxy(OXYLABS, attempts=3, name='Oxylabs')
+        self._access_token = None
+        self.url_auth = 'https://services.mxgrability.rappi.com/api/auth/guest_access_token'
+        self.url_content = 'https://services.mxgrability.rappi.com/api/dynamic/context/content'
+        self.base_url = 'https://www.rappi.com.mx/'
+        self.url_image = 'https://images.rappi.com.mx/products/{}'
+        self.url_product = 'https://www.rappi.com.mx/product/{}'
+        self.dep_list = []
+        self.cat_list = []
+        self.product_list = []
+        self.total_products = 0
 
     def perform_request(self, url, headers={}, json={}, method='GET', return_json=True, require_auth=False):
         logger.debug('[ByRequest] Requesting {}'.format(url))
@@ -306,10 +306,11 @@ class StoreCrawler:
         # self.get_store_departments(params)
         # time.sleep(1)
         self.get_store_categories(params)
-        time.sleep(0.5)
-        for category_dict in self.cat_list:
-            for subcategory_dict in category_dict['children']:
-                self.get_category_products(subcategory_dict, params)
-            time.sleep(random.randint(2, 4))
-        self.send_products(params)
-        return self.total_products
+        # time.sleep(0.5)
+        # for category_dict in self.cat_list:
+        #     for subcategory_dict in category_dict['children']:
+        #         self.get_category_products(subcategory_dict, params)
+        #     time.sleep(random.randint(2, 4))
+        # self.send_products(params)
+        # return self.total_products
+        return 0
