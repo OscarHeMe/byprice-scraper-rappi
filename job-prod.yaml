@@ -34,29 +34,34 @@ spec:
     spec:
       restartPolicy: OnFailure
       containers:
-      - name: rappi-price-scraper
-        image: gcr.io/byprice-backend/production/byprice-scraper-rappi:master
-        imagePullPolicy: Always
-        resources:
-          limits:
-            memory: 1024Mi
-          requests:
-            cpu: 256m
-            memory: 256Mi
-        command: ['/bin/bash' , '-c', 'echo Starting container !! && export SCRAPER_TYPE=price && ./run.sh']
-        env:
-        - name: "STREAMER_PASS"
-          valueFrom:
-            secretKeyRef:
-              name: scraper-secret
-              key: STREAMER_PASS
-        - name: "CELERY_PASS"
-          valueFrom:
-            secretKeyRef:
-              name: scraper-secret
-              key: CELERY_PASS
-        - name: "OXYLABS"
-          valueFrom:
-            secretKeyRef:
-              name: scraper-secret
-              key: OXYLABS
+        - name: rappi-price-scraper
+          image: us.icr.io/scrapers/byprice-scraper-rappi:master
+          imagePullPolicy: Always
+          resources:
+            limits:
+              memory: 1024Mi
+            requests:
+              cpu: 256m
+              memory: 256Mi
+          command:
+            [
+              "/bin/bash",
+              "-c",
+              "echo Starting container !! && export SCRAPER_TYPE=price && ./run.sh",
+            ]
+          env:
+            - name: "STREAMER_PASS"
+              valueFrom:
+                secretKeyRef:
+                  name: scraper-secret
+                  key: STREAMER_PASS
+            - name: "CELERY_PASS"
+              valueFrom:
+                secretKeyRef:
+                  name: scraper-secret
+                  key: CELERY_PASS
+            - name: "OXYLABS"
+              valueFrom:
+                secretKeyRef:
+                  name: scraper-secret
+                  key: OXYLABS
