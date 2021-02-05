@@ -5,11 +5,11 @@ node {
     sh 'sleep 3m'
   }
 
-  stage('Delete Scraper Job on GCP') {
+  stage('Delete Scraper Job on IBM') {
     try {
-        withKubeConfig([credentialsId: 'jenkins-routine-token-srhrz',
-                    serverUrl: 'https://104.196.250.198',
-                    clusterName: 'scraper-cluster-production-zonal-highcpu',
+        withKubeConfig([credentialsId: 'jenkins-token-8vlqc',
+                    serverUrl: 'https://c7.us-south.containers.cloud.ibm.com:23417',
+                    clusterName: 'scraper-mex-prod',
                     namespace: 'default'
                     ]) {
 
@@ -18,9 +18,9 @@ node {
         }
     }
     catch (err) {
-        withKubeConfig([credentialsId: 'jenkins-routine-token-srhrz',
-                    serverUrl: 'https://104.196.250.198',
-                    clusterName: 'scraper-cluster-production-zonal-highcpu',
+        withKubeConfig([credentialsId: 'jenkins-token-8vlqc',
+                    serverUrl: 'https://c7.us-south.containers.cloud.ibm.com:23417',
+                    clusterName: 'scraper-mex-prod',
                     namespace: 'default'
                     ]) {
 
@@ -30,9 +30,9 @@ node {
   }
 
   stage('Apply Scraper Job on GCP') {
-    withKubeConfig([credentialsId: 'jenkins-routine-token-srhrz',
-                    serverUrl: 'https://104.196.250.198',
-                    clusterName: 'scraper-cluster-production-zonal-highcpu',
+    withKubeConfig([credentialsId: 'jenkins-token-8vlqc',
+                    serverUrl: 'https://c7.us-south.containers.cloud.ibm.com:23417',
+                    clusterName: 'scraper-mex-prod',
                     namespace: 'default'
                     ]) {
       sh 'kubectl apply -f job-prod.yaml'
