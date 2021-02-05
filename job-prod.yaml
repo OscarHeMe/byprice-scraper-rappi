@@ -35,7 +35,7 @@ spec:
       restartPolicy: OnFailure
       containers:
         - name: rappi-price-scraper
-          image: us.icr.io/scrapers/byprice-scraper-rappi:master
+          image: us.icr.io/scrapers/byprice-scraper-rappi
           imagePullPolicy: Always
           resources:
             limits:
